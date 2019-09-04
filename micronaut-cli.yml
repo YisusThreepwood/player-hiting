@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: player.hiring
+---
+testFramework: spek
+sourceLanguage: kotlin
