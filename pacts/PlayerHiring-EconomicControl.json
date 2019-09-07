@@ -1,0 +1,62 @@
+{
+  "provider": {
+    "name": "EconomicControl"
+  },
+  "consumer": {
+    "name": "PlayerHiring"
+  },
+  "interactions": [
+    {
+      "description": "a request to get allowed amount to an existing club",
+      "request": {
+        "method": "GET",
+        "path": "/balance/niupi"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset\u003dUTF-8"
+        },
+        "body": {
+          "allowed_amount": 123.45
+        },
+        "matchingRules": {
+          "body": {
+            "$.allowed_amount": {
+              "matchers": [
+                {
+                  "match": "decimal"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset\u003d[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "Get allowed amount with decimals for an existing club"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "4.0.0-beta.6"
+    }
+  }
+}

@@ -29,6 +29,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
     implementation "io.micronaut:micronaut-runtime"
     implementation "javax.annotation:javax.annotation-api"
+    implementation("au.com.dius:pact-jvm-consumer-junit5:$pactVersion")
     kapt platform("io.micronaut:micronaut-bom:$micronautVersion")
     kapt "io.micronaut:micronaut-inject-java"
     kapt "io.micronaut:micronaut-validation"
@@ -55,6 +56,8 @@ run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxrem
 
 test {
     useJUnitPlatform()
+    systemProperties['pact.rootDir'] = "pacts"
+    systemProperties['pact.writer.overwrite'] = true
 }
 
 allOpen {
