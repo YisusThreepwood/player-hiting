@@ -1,0 +1,89 @@
+{
+  "provider": {
+    "name": "Contracts"
+  },
+  "consumer": {
+    "name": "PlayerHiring"
+  },
+  "interactions": [
+    {
+      "description": "a request to get the info of an existing player\u0027s current contract ",
+      "request": {
+        "method": "GET",
+        "path": "/contract/current/1"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json; charset\u003dUTF-8"
+        },
+        "body": {
+          "end_date": "1980-06-08",
+          "player_id": "000321",
+          "club_id": "21",
+          "id": "123"
+        },
+        "matchingRules": {
+          "body": {
+            "$.id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.player_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.club_id": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            },
+            "$.end_date": {
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ],
+              "combine": "AND"
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset\u003d[\\w\\-]+)?"
+                }
+              ],
+              "combine": "AND"
+            }
+          }
+        }
+      },
+      "providerStates": [
+        {
+          "name": "Get player\u0027s current contract"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "3.0.0"
+    },
+    "pact-jvm": {
+      "version": "4.0.0-beta.6"
+    }
+  }
+}

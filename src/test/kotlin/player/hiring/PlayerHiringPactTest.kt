@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Assertions
 class PlayerHiringPactTest {
 
     @Pact(provider = "EconomicControl", consumer = "PlayerHiring")
-    fun createPactForDecimalAmount(builder: PactDslWithProvider): RequestResponsePact {
+    fun createPactForBalance(builder: PactDslWithProvider): RequestResponsePact {
         val body: DslPart = PactDslJsonBody()
                 .decimalType("allowed_amount", 123.45)
         return builder
@@ -35,7 +35,7 @@ class PlayerHiringPactTest {
     }
 
     @Test
-    @PactTestFor(pactMethod = "createPactForDecimalAmount")
+    @PactTestFor(pactMethod = "createPactForBalance")
     fun testGetAllowedAmountWithDecimals(mockServer: MockServer) {
         // Act
         var response: HttpResponse = Request.Get(mockServer.getUrl() + "/balance/niupi").execute().returnResponse()
@@ -44,5 +44,40 @@ class PlayerHiringPactTest {
         Assertions.assertEquals(200, response.statusLine.statusCode)
         val jsonContent = JSONObject(EntityUtils.toString(response.entity))
         Assertions.assertEquals(123.45, jsonContent.get("allowed_amount"))
+    }
+
+    @Pact(provider = "Contracts", consumer = "PlayerHiring")
+    fun createPactForPlayerCurrentContract(builder: PactDslWithProvider): RequestResponsePact {
+        val body: DslPart = PactDslJsonBody()
+                .stringType("id", "123")
+                .stringType("player_id", "000321")
+                .stringType("club_id", "21")
+                .stringType("end_date", "1980-06-08")
+        return builder
+                .given("Get player's current contract")
+                .uponReceiving("a request to get the info of an existing player's current contract ")
+                .path("/contract/current/1")
+                .method("get")
+                .willRespondWith()
+                .status(200)
+                .body(body)
+                .toPact()
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "createPactForPlayerCurrentContract")
+    fun testGetPlayerCurrentContract(mockServer: MockServer) {
+        // Act
+        var response: HttpResponse = Request.Get(mockServer.getUrl() + "/contract/current/1")
+                .execute()
+                .returnResponse()
+
+        // Assert
+        Assertions.assertEquals(200, response.statusLine.statusCode)
+        val jsonContent = JSONObject(EntityUtils.toString(response.entity))
+        Assertions.assertEquals("123", jsonContent.get("id"))
+        Assertions.assertEquals("000321", jsonContent.get("player_id"))
+        Assertions.assertEquals("21", jsonContent.get("club_id"))
+        Assertions.assertEquals("1980-06-08", jsonContent.get("end_date"))
     }
 }
