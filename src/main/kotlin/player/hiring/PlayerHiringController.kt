@@ -1,13 +1,22 @@
 package player.hiring
 
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
+import javax.json.Json
 
 @Controller("/player-hiring")
 class PlayerHiringController {
-    @Post("/{clubId}")
-    @Produces(MediaType.TEXT_PLAIN)
-    fun show(clubId: String): String {
-        return "You are requesting for the $clubId balance"
+
+    @Post("/")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    fun create(): HttpResponse<Any?> {
+        return  HttpResponse.ok(
+            Json.createObjectBuilder()
+                .add("message", "It's a test")
+                .build()
+                .toString()
+        )
     }
 }
