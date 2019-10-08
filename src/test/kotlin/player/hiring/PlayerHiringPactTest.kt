@@ -19,17 +19,23 @@ import org.junit.jupiter.api.Assertions
 @ExtendWith(PactConsumerTestExt::class)
 class PlayerHiringPactTest {
 
+    private val UID_REGEXP: String = "\\w*\$"
+    private val DATE_REGEXP: String = "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"
+
     @Pact(provider = "EconomicControl", consumer = "PlayerHiring")
     fun createPactForBalance(builder: PactDslWithProvider): RequestResponsePact {
-        val body: DslPart = PactDslJsonBody()
+        val body: PactDslJsonBody = PactDslJsonBody()
                 .decimalType("allowed_amount", 123.45)
+
         return builder
                 .given("Get allowed amount with decimals for an existing club")
                 .uponReceiving("a request to get allowed amount to an existing club")
                 .path("/balance/niupi")
                 .method("get")
+                .headers("Content-Type", "application/json")
                 .willRespondWith()
                 .status(200)
+                .headers(mapOf("Content-Type" to "application/json"))
                 .body(body)
                 .toPact()
     }
@@ -38,7 +44,10 @@ class PlayerHiringPactTest {
     @PactTestFor(pactMethod = "createPactForBalance")
     fun testGetAllowedAmountWithDecimals(mockServer: MockServer) {
         // Act
-        var response: HttpResponse = Request.Get(mockServer.getUrl() + "/balance/niupi").execute().returnResponse()
+        val response: HttpResponse = Request.Get(mockServer.getUrl() + "/balance/niupi")
+            .addHeader("Content-Type", "application/json")
+            .execute()
+            .returnResponse()
 
         // Assert
         Assertions.assertEquals(200, response.statusLine.statusCode)
@@ -49,17 +58,20 @@ class PlayerHiringPactTest {
     @Pact(provider = "Contracts", consumer = "PlayerHiring")
     fun createPactForPlayerCurrentContract(builder: PactDslWithProvider): RequestResponsePact {
         val body: DslPart = PactDslJsonBody()
-                .stringType("id", "123")
-                .stringType("player_id", "000321")
-                .stringType("club_id", "21")
-                .stringType("end_date", "1980-06-08")
+                .stringMatcher("id", UID_REGEXP, "abc123")
+                .stringMatcher("player_id", UID_REGEXP, "000321")
+                .stringMatcher("club_id", UID_REGEXP, "21")
+                .stringMatcher("end_date", DATE_REGEXP, "1980-06-08")
+
         return builder
                 .given("Get player's current contract")
-                .uponReceiving("a request to get the info of an existing player's current contract ")
-                .path("/contract/current/1")
+                .uponReceiving("a request to get the info of an existing player's current contract")
                 .method("get")
+                .path("/contract/current/000321")
+                .headers("Content-Type", "application/json")
                 .willRespondWith()
                 .status(200)
+                .headers(mapOf("Content-Type" to "application/json"))
                 .body(body)
                 .toPact()
     }
@@ -68,14 +80,17 @@ class PlayerHiringPactTest {
     @PactTestFor(pactMethod = "createPactForPlayerCurrentContract")
     fun testGetPlayerCurrentContract(mockServer: MockServer) {
         // Act
-        var response: HttpResponse = Request.Get(mockServer.getUrl() + "/contract/current/1")
+        val response: HttpResponse = Request.Get(mockServer.getUrl() + "/contract/current/000321")
+                .addHeader("Content-Type", "application/json")
                 .execute()
                 .returnResponse()
 
         // Assert
         Assertions.assertEquals(200, response.statusLine.statusCode)
+        Assertions.assertEquals("application/json", response.getHeaders("Content-Type").last().value);
+
         val jsonContent = JSONObject(EntityUtils.toString(response.entity))
-        Assertions.assertEquals("123", jsonContent.get("id"))
+        Assertions.assertEquals("abc123", jsonContent.get("id"))
         Assertions.assertEquals("000321", jsonContent.get("player_id"))
         Assertions.assertEquals("21", jsonContent.get("club_id"))
         Assertions.assertEquals("1980-06-08", jsonContent.get("end_date"))

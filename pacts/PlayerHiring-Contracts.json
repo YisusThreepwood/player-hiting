@@ -7,28 +7,32 @@
   },
   "interactions": [
     {
-      "description": "a request to get the info of an existing player\u0027s current contract ",
+      "description": "a request to get the info of an existing player\u0027s current contract",
       "request": {
         "method": "GET",
-        "path": "/contract/current/1"
+        "path": "/contract/current/000321",
+        "headers": {
+          "Content-Type": "application/json"
+        }
       },
       "response": {
         "status": 200,
         "headers": {
-          "Content-Type": "application/json; charset\u003dUTF-8"
+          "Content-Type": "application/json"
         },
         "body": {
           "end_date": "1980-06-08",
           "player_id": "000321",
           "club_id": "21",
-          "id": "123"
+          "id": "abc123"
         },
         "matchingRules": {
           "body": {
             "$.id": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "regex",
+                  "regex": "\\w*$"
                 }
               ],
               "combine": "AND"
@@ -36,7 +40,8 @@
             "$.player_id": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "regex",
+                  "regex": "\\w*$"
                 }
               ],
               "combine": "AND"
@@ -44,7 +49,8 @@
             "$.club_id": {
               "matchers": [
                 {
-                  "match": "type"
+                  "match": "regex",
+                  "regex": "\\w*$"
                 }
               ],
               "combine": "AND"
@@ -52,18 +58,8 @@
             "$.end_date": {
               "matchers": [
                 {
-                  "match": "type"
-                }
-              ],
-              "combine": "AND"
-            }
-          },
-          "header": {
-            "Content-Type": {
-              "matchers": [
-                {
                   "match": "regex",
-                  "regex": "application/json(;\\s?charset\u003d[\\w\\-]+)?"
+                  "regex": "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"
                 }
               ],
               "combine": "AND"

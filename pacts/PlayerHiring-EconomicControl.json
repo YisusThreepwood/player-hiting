@@ -10,12 +10,15 @@
       "description": "a request to get allowed amount to an existing club",
       "request": {
         "method": "GET",
-        "path": "/balance/niupi"
+        "path": "/balance/niupi",
+        "headers": {
+          "Content-Type": "application/json"
+        }
       },
       "response": {
         "status": 200,
         "headers": {
-          "Content-Type": "application/json; charset\u003dUTF-8"
+          "Content-Type": "application/json"
         },
         "body": {
           "allowed_amount": 123.45
@@ -26,17 +29,6 @@
               "matchers": [
                 {
                   "match": "decimal"
-                }
-              ],
-              "combine": "AND"
-            }
-          },
-          "header": {
-            "Content-Type": {
-              "matchers": [
-                {
-                  "match": "regex",
-                  "regex": "application/json(;\\s?charset\u003d[\\w\\-]+)?"
                 }
               ],
               "combine": "AND"
